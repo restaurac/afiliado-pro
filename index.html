@@ -643,33 +643,46 @@ async function callAI(messages, maxTokens=2000) {
     }
   }
 
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://restaurac.github.io',
-      'X-Title': 'AfiliadoPro'
-    },
-    body: JSON.stringify({
-      model: 'meta-llama/llama-3.1-8b-instruct:free',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: maxTokens,
-      temperature: 0.7
-    })
-  });
+  // Modelos grátis disponíveis no OpenRouter (tenta em ordem)
+  const models = [
+    'google/gemma-3-4b-it:free',
+    'mistralai/mistral-7b-instruct:free',
+    'google/gemma-2-9b-it:free',
+    'meta-llama/llama-3.2-3b-instruct:free',
+  ];
 
-  const data = await res.json();
-  if (!res.ok) {
-    const msg = data.error?.message || 'Erro na API';
-    if (msg.includes('key') || msg.includes('auth') || msg.includes('401')) {
-      throw new Error('Chave inválida. Verifique em openrouter.ai/keys');
+  for (const model of models) {
+    try {
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://restaurac.github.io',
+          'X-Title': 'AfiliadoPro'
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: maxTokens,
+          temperature: 0.7
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const msg = data.error?.message || '';
+        if (msg.includes('key') || msg.includes('auth') || msg.includes('401')) {
+          throw new Error('Chave inválida. Verifique em openrouter.ai/keys');
+        }
+        continue; // tenta próximo modelo
+      }
+      const text = data.choices?.[0]?.message?.content;
+      if (text) return text;
+    } catch(e) {
+      if (e.message.includes('inválida') || e.message.includes('invalid')) throw e;
     }
-    throw new Error(msg);
   }
-  const text = data.choices?.[0]?.message?.content;
-  if (!text) throw new Error('Sem resposta da IA. Tente novamente.');
-  return text;
+  throw new Error('Sem resposta da IA. Verifique sua chave em openrouter.ai/keys');
 }
 function parseJSON(raw) { const c=raw.replace(/```json|```/g,'').trim(); return JSON.parse(c.substring(c.indexOf('{'),c.lastIndexOf('}')+1)); }
 function fileToB64(f) { return new Promise((ok,er)=>{ const r=new FileReader(); r.onload=()=>ok(r.result.split(',')[1]); r.onerror=er; r.readAsDataURL(f); }); }
