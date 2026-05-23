@@ -171,15 +171,15 @@ textarea.inp{resize:vertical;}
 <div id="apiModal" class="modal-overlay">
   <div class="modal">
     <div style="font-size:36px;margin-bottom:12px">🔑</div>
-    <h2>API Key — Groq (Grátis)</h2>
-    <p style="margin-bottom:14px">100% grátis e funciona direto no browser!<br><br>
-    1. Acesse <a href="https://console.groq.com/keys" target="_blank"><b>console.groq.com/keys</b></a><br>
-    2. Crie conta grátis com Google<br>
-    3. Clique em <b>"Create API Key"</b><br>
+    <h2>API Key — OpenRouter</h2>
+    <p style="margin-bottom:14px">Grátis! Só precisa de email:<br><br>
+    1. Acesse <a href="https://openrouter.ai/keys" target="_blank"><b>openrouter.ai/keys</b></a><br>
+    2. Clique <b>"Sign Up"</b> e crie conta com email<br>
+    3. Vá em <b>Keys</b> → <b>"Create Key"</b><br>
     4. Copie a chave e cole abaixo 👇</p>
-    <input type="password" id="apiKeyInput" class="inp" placeholder="gsk_..." style="margin-bottom:12px"/>
+    <input type="password" id="apiKeyInput" class="inp" placeholder="sk-or-v1-..." style="margin-bottom:12px"/>
     <button class="btn-primary" onclick="saveApiKey()">✅ Salvar e Continuar</button>
-    <p style="font-size:11px;color:#22C55E;margin-top:10px;text-align:center;font-weight:700">🆓 100% Grátis — Sem cartão de crédito</p>
+    <p style="font-size:11px;color:#22C55E;margin-top:10px;text-align:center;font-weight:700">🆓 Grátis — Modelos free disponíveis</p>
     <p style="font-size:11px;color:var(--mu);margin-top:6px;text-align:center">🔒 Salva só no seu navegador</p>
   </div>
 </div>
@@ -433,15 +433,15 @@ textarea.inp{resize:vertical;}
           <div id="rb-dark" style="width:23px;height:23px;border-radius:50%;border:2.5px solid var(--bd);background:transparent"></div>
         </button>
       </div>
-      <span class="lbl">API KEY — GROQ 🆓</span>
+      <span class="lbl">API KEY — OPENROUTER 🆓</span>
       <div class="card card-p" style="margin-bottom:22px">
-        <p style="color:var(--sub);font-size:12px;margin-bottom:10px">Sua chave do Groq está salva. <span style="color:#22C55E;font-weight:700">100% Grátis!</span></p>
+        <p style="color:var(--sub);font-size:12px;margin-bottom:10px">Sua chave OpenRouter está salva. <span style="color:#22C55E;font-weight:700">Grátis!</span></p>
         <button onclick="showApiModal()" class="btn-primary" style="font-size:13px;padding:11px">🔑 Atualizar API Key</button>
       </div>
       <span class="lbl">SOBRE</span>
       <div class="card">
         <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">Versão</span><span style="color:var(--mu)">1.0.0</span></div>
-        <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">IA</span><span style="color:#22C55E;font-weight:700">Groq LLaMA 🆓</span></div>
+        <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">IA</span><span style="color:#22C55E;font-weight:700">OpenRouter LLaMA 🆓</span></div>
         <div style="display:flex;justify-content:space-between;padding:14px 16px"><span style="color:var(--tx);font-size:14px;font-weight:600">Plataformas</span><span style="color:var(--mu)">Shopee & ML</span></div>
       </div>
     </div>
@@ -630,9 +630,8 @@ async function loadImgUrl() {
   }
 }
 
-/* ── AI CALL — Groq (grátis, sem CORS) ── */
+/* ── AI CALL — OpenRouter (grátis, sem CORS) ── */
 async function callAI(messages, maxTokens=2000) {
-  // Monta prompt como texto simples para o Groq
   let prompt = '';
   for (const msg of messages) {
     if (Array.isArray(msg.content)) {
@@ -644,14 +643,16 @@ async function callAI(messages, maxTokens=2000) {
     }
   }
 
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': 'https://restaurac.github.io',
+      'X-Title': 'AfiliadoPro'
     },
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
+      model: 'meta-llama/llama-3.1-8b-instruct:free',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: maxTokens,
       temperature: 0.7
@@ -661,12 +662,14 @@ async function callAI(messages, maxTokens=2000) {
   const data = await res.json();
   if (!res.ok) {
     const msg = data.error?.message || 'Erro na API';
-    if (msg.includes('invalid_api_key') || msg.includes('Invalid API Key')) {
-      throw new Error('Chave inválida. Verifique em console.groq.com');
+    if (msg.includes('key') || msg.includes('auth') || msg.includes('401')) {
+      throw new Error('Chave inválida. Verifique em openrouter.ai/keys');
     }
     throw new Error(msg);
   }
-  return data.choices?.[0]?.message?.content || '';
+  const text = data.choices?.[0]?.message?.content;
+  if (!text) throw new Error('Sem resposta da IA. Tente novamente.');
+  return text;
 }
 function parseJSON(raw) { const c=raw.replace(/```json|```/g,'').trim(); return JSON.parse(c.substring(c.indexOf('{'),c.lastIndexOf('}')+1)); }
 function fileToB64(f) { return new Promise((ok,er)=>{ const r=new FileReader(); r.onload=()=>ok(r.result.split(',')[1]); r.onerror=er; r.readAsDataURL(f); }); }
