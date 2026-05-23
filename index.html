@@ -171,12 +171,13 @@ textarea.inp{resize:vertical;}
 <div id="apiModal" class="modal-overlay">
   <div class="modal">
     <div style="font-size:36px;margin-bottom:12px">🔑</div>
-    <h2>API Key — Google Gemini</h2>
-    <p style="margin-bottom:14px">Grátis! Siga os passos:<br><br>
-    1. Acesse <a href="https://aistudio.google.com/apikey" target="_blank"><b>aistudio.google.com/apikey</b></a><br>
-    2. Clique em <b>"Create API Key"</b><br>
-    3. Copie a chave e cole abaixo 👇</p>
-    <input type="password" id="apiKeyInput" class="inp" placeholder="AIza..." style="margin-bottom:12px"/>
+    <h2>API Key — Groq (Grátis)</h2>
+    <p style="margin-bottom:14px">100% grátis e funciona direto no browser!<br><br>
+    1. Acesse <a href="https://console.groq.com/keys" target="_blank"><b>console.groq.com/keys</b></a><br>
+    2. Crie conta grátis com Google<br>
+    3. Clique em <b>"Create API Key"</b><br>
+    4. Copie a chave e cole abaixo 👇</p>
+    <input type="password" id="apiKeyInput" class="inp" placeholder="gsk_..." style="margin-bottom:12px"/>
     <button class="btn-primary" onclick="saveApiKey()">✅ Salvar e Continuar</button>
     <p style="font-size:11px;color:#22C55E;margin-top:10px;text-align:center;font-weight:700">🆓 100% Grátis — Sem cartão de crédito</p>
     <p style="font-size:11px;color:var(--mu);margin-top:6px;text-align:center">🔒 Salva só no seu navegador</p>
@@ -432,15 +433,15 @@ textarea.inp{resize:vertical;}
           <div id="rb-dark" style="width:23px;height:23px;border-radius:50%;border:2.5px solid var(--bd);background:transparent"></div>
         </button>
       </div>
-      <span class="lbl">API KEY — GOOGLE GEMINI 🆓</span>
+      <span class="lbl">API KEY — GROQ 🆓</span>
       <div class="card card-p" style="margin-bottom:22px">
-        <p style="color:var(--sub);font-size:12px;margin-bottom:10px">Sua chave do Google Gemini está salva no navegador. <span style="color:#22C55E;font-weight:700">100% Grátis!</span></p>
+        <p style="color:var(--sub);font-size:12px;margin-bottom:10px">Sua chave do Groq está salva. <span style="color:#22C55E;font-weight:700">100% Grátis!</span></p>
         <button onclick="showApiModal()" class="btn-primary" style="font-size:13px;padding:11px">🔑 Atualizar API Key</button>
       </div>
       <span class="lbl">SOBRE</span>
       <div class="card">
         <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">Versão</span><span style="color:var(--mu)">1.0.0</span></div>
-        <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">IA</span><span style="color:#22C55E;font-weight:700">Google Gemini 🆓</span></div>
+        <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">IA</span><span style="color:#22C55E;font-weight:700">Groq LLaMA 🆓</span></div>
         <div style="display:flex;justify-content:space-between;padding:14px 16px"><span style="color:var(--tx);font-size:14px;font-weight:600">Plataformas</span><span style="color:var(--mu)">Shopee & ML</span></div>
       </div>
     </div>
@@ -629,54 +630,43 @@ async function loadImgUrl() {
   }
 }
 
-/* ── AI CALL — Google Gemini via proxy (sem CORS) ── */
+/* ── AI CALL — Groq (grátis, sem CORS) ── */
 async function callAI(messages, maxTokens=2000) {
-  const parts = [];
+  // Monta prompt como texto simples para o Groq
+  let prompt = '';
   for (const msg of messages) {
     if (Array.isArray(msg.content)) {
       for (const c of msg.content) {
-        if (c.type === 'text') parts.push({ text: c.text });
-        else if (c.type === 'image') parts.push({ inlineData: { mimeType: c.source.media_type, data: c.source.data } });
+        if (c.type === 'text') prompt += c.text + '\n';
       }
     } else {
-      parts.push({ text: msg.content });
+      prompt += msg.content + '\n';
     }
   }
 
-  const body = {
-    contents: [{ parts }],
-    generationConfig: { maxOutputTokens: maxTokens, temperature: 0.7 }
-  };
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: maxTokens,
+      temperature: 0.7
+    })
+  });
 
-  // Tenta direto primeiro, depois proxy
-  const endpoints = [
-    { url: `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, direct: true },
-    { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, direct: true },
-    { url: `https://corsproxy.io/?${encodeURIComponent(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`)}`, direct: false },
-    { url: `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`)}`, direct: false },
-  ];
-
-  let lastError = 'Erro desconhecido';
-  for (const ep of endpoints) {
-    try {
-      const res = await fetch(ep.url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      const data = await res.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (text) return text;
-      lastError = data.error?.message || 'Sem resposta da IA';
-      if (lastError.includes('API_KEY_INVALID') || lastError.includes('API key not valid')) {
-        throw new Error('Chave de API inválida. Verifique em aistudio.google.com');
-      }
-    } catch(e) {
-      lastError = e.message;
-      if (lastError.includes('inválida') || lastError.includes('invalid')) throw e;
+  const data = await res.json();
+  if (!res.ok) {
+    const msg = data.error?.message || 'Erro na API';
+    if (msg.includes('invalid_api_key') || msg.includes('Invalid API Key')) {
+      throw new Error('Chave inválida. Verifique em console.groq.com');
     }
+    throw new Error(msg);
   }
-  throw new Error('Não foi possível conectar ao Gemini. Verifique sua API Key.');
+  return data.choices?.[0]?.message?.content || '';
 }
 function parseJSON(raw) { const c=raw.replace(/```json|```/g,'').trim(); return JSON.parse(c.substring(c.indexOf('{'),c.lastIndexOf('}')+1)); }
 function fileToB64(f) { return new Promise((ok,er)=>{ const r=new FileReader(); r.onload=()=>ok(r.result.split(',')[1]); r.onerror=er; r.readAsDataURL(f); }); }
