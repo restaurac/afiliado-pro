@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>AfiliadoPro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#F5F5F5;min-height:100vh;}
+:root{--a1:#FF6B35;--a2:#E8A020;--v1:#7C3AED;}
+.gr{background:linear-gradient(135deg,var(--a1),var(--a2));}
+.vgr{background:linear-gradient(135deg,var(--v1),#A855F7);}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* THEME */
+body.light{--bg:#F5F5F5;--card:#FFF;--card2:#F0F0F0;--bd:#E5E5E5;--tx:#111;--sub:#555;--mu:#999;--inp:#F8F8F8;--nav:#FFF;}
+body.dark{--bg:#0D0D0D;--card:#1A1A1A;--card2:#242424;--bd:#333;--tx:#F2F2F2;--sub:#AAA;--mu:#666;--inp:#1E1E1E;--nav:#141414;}
+body{background:var(--bg);color:var(--tx);}
+
+.app{max-width:500px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;background:var(--bg);}
+
+/* TOPBAR */
+.topbar{background:var(--nav);border-bottom:1px solid var(--bd);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.logo{display:flex;align-items:center;gap:9px;}
+.logo-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--a1),var(--a2));display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo-text{font-size:18px;font-weight:900;letter-spacing:-0.5px;color:var(--tx);}
+.logo-text span{background:linear-gradient(135deg,var(--a1),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.theme-btn{background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:18px;}
+
+/* CONTENT */
+.page{flex:1;overflow-y:auto;padding-bottom:80px;animation:fadeUp .28s ease;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:var(--nav);border-top:1px solid var(--bd);display:flex;padding:6px 0 max(10px,env(safe-area-inset-bottom));z-index:100;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:2px 0;}
+.nav-btn span.icon{font-size:22px;opacity:.4;transition:opacity .2s;}
+.nav-btn.active span.icon{opacity:1;}
+.nav-btn span.label{font-size:10px;font-weight:700;color:var(--mu);transition:color .2s;}
+.nav-btn.active span.label{color:var(--a1);}
+.nav-center{width:46px;height:46px;border-radius:15px;background:rgba(255,107,53,.2);display:flex;align-items:center;justify-content:center;font-size:22px;margin-top:-22px;transition:all .22s;}
+.nav-btn.active .nav-center{background:linear-gradient(135deg,var(--a1),var(--a2));box-shadow:0 4px 18px rgba(255,107,53,.4);}
+
+/* CARD */
+.card{background:var(--card);border-radius:18px;border:1px solid var(--bd);box-shadow:0 1px 8px rgba(0,0,0,.07);overflow:hidden;}
+.card-p{padding:16px;}
+
+/* HERO BANNER */
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));padding:24px 18px 22px;border-radius:0 0 24px 24px;margin-bottom:18px;}
+.hero h1{color:#fff;font-size:28px;font-weight:900;margin:4px 0 16px;letter-spacing:-0.5px;}
+.hero p{color:rgba(255,255,255,.75);font-size:12px;font-weight:600;margin:0;}
+.hero-btn{background:rgba(255,255,255,.22);color:#fff;border:none;border-radius:12px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;}
+
+/* SEG CTRL */
+.seg{display:flex;background:var(--card2);border-radius:13px;padding:4px;gap:3px;}
+.seg-btn{flex:1;padding:10px 6px;border-radius:10px;border:none;background:transparent;color:var(--mu);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.seg-btn.active{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;}
+.seg-btn.active.video{background:linear-gradient(135deg,#7C3AED,#A855F7);}
+
+/* INPUT */
+.inp{width:100%;padding:13px 15px;border-radius:12px;border:2px solid var(--bd);background:var(--inp);color:var(--tx);font-size:13px;outline:none;font-family:inherit;transition:border-color .2s;}
+.inp:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(255,107,53,.15);}
+textarea.inp{resize:vertical;}
+
+/* BUTTONS */
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(255,107,53,.35);display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;font-family:inherit;}
+.btn-primary:disabled{background:#ccc;box-shadow:none;cursor:not-allowed;opacity:.5;}
+.btn-primary.video{background:linear-gradient(135deg,#7C3AED,#A855F7);box-shadow:0 4px 20px rgba(124,58,237,.35);}
+.btn-share{border:none;border-radius:12px;padding:12px 8px;font-size:12px;font-weight:700;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;}
+.btn-copy{width:100%;background:transparent;color:var(--sub);border:2px solid var(--bd);border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;}
+
+/* SPINNER */
+.spinner-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 0;}
+.spinner{width:48px;height:48px;border-radius:50%;border:4px solid rgba(255,107,53,.2);border-top-color:var(--a1);animation:spin .8s linear infinite;}
+.spinner.v{border-top-color:var(--v1);border-color:rgba(124,58,237,.2);border-top-color:#7C3AED;}
+
+/* CHIP */
+.chip{display:inline-block;font-size:10px;font-weight:800;padding:3px 11px;border-radius:20px;letter-spacing:1px;}
+
+/* LABEL */
+.lbl{color:var(--mu);font-size:10px;font-weight:800;letter-spacing:1.8px;margin-bottom:10px;display:block;}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px;}
+.stat{padding:13px 8px;text-align:center;}
+.stat .icon{font-size:22px;margin-bottom:3px;}
+.stat .val{font-size:22px;font-weight:900;margin:0 0 1px;}
+.stat .lbl2{font-size:10px;font-weight:700;color:var(--mu);}
+
+/* PHOTO UPLOAD */
+.photo-label{display:flex;flex-direction:column;align-items:center;padding:28px 16px;border:2px dashed var(--bd);border-radius:13px;background:var(--card2);cursor:pointer;}
+.photo-label .choose-btn{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;padding:9px 22px;font-size:13px;font-weight:700;margin-top:14px;}
+
+/* STORY CARD */
+.story-card{border-radius:13px;overflow:hidden;border:1px solid var(--bd);}
+.story-header{background:linear-gradient(135deg,var(--a1),var(--a2));padding:7px 14px;}
+.story-header span{color:#fff;font-size:10px;font-weight:800;letter-spacing:1px;}
+.story-body{padding:13px;}
+
+/* STORYBOARD */
+.storyboard-preview{position:relative;background:#111;height:200px;overflow:hidden;}
+.sb-scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;opacity:0;transform:scale(.95);transition:all .5s ease;}
+.sb-scene.active{opacity:1;transform:scale(1);}
+.sb-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;}
+.sb-dot{height:6px;border-radius:3px;background:rgba(255,255,255,.4);transition:all .3s;width:6px;}
+.sb-dot.active{width:20px;background:#fff;}
+
+/* PLATFORM CARD */
+.plat-card{border-radius:13px;overflow:hidden;margin-bottom:12px;}
+.plat-header{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.plat-body{padding:10px 14px;}
+.plat-open{color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+/* API KEY MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--card);border-radius:20px;padding:24px;width:100%;max-width:380px;}
+.modal h2{font-size:20px;font-weight:900;margin-bottom:8px;color:var(--tx);}
+.modal p{font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.5;}
+.modal a{color:var(--a1);font-weight:700;}
+
+/* TOAST */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;background:#111;color:#fff;padding:12px 22px;border-radius:30px;font-size:13px;font-weight:700;box-shadow:0 4px 24px rgba(0,0,0,.35);white-space:nowrap;max-width:90vw;text-align:center;animation:fadeUp .3s ease;pointer-events:none;}
+
+/* SECTION */
+.section{padding:0 14px;}
+.section-title{color:var(--mu);font-size:10px;font-weight:800;letter-spacing:1.5px;margin-bottom:10px;}
+.action-list{display:flex;flex-direction:column;gap:9px;}
+.action-item{background:var(--card);border-radius:16px;border:1px solid var(--bd);padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;width:100%;}
+.action-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.action-label{flex:1;font-size:13px;font-weight:600;color:var(--tx);text-align:left;}
+.action-arrow{color:var(--mu);font-size:22px;font-weight:300;}
+
+/* CHECKLIST */
+.check-item{padding:12px 14px;display:flex;align-items:center;gap:12px;}
+.check-box{width:26px;height:26px;border-radius:7px;flex-shrink:0;border:2.5px solid var(--bd);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.check-box.done{background:var(--a1);border-color:var(--a1);}
+.check-label{font-size:13px;font-weight:600;flex:1;color:var(--tx);}
+.check-label.done{text-decoration:line-through;color:var(--mu);}
+.progress-bar{height:8px;background:var(--card2);border-radius:8px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(135deg,var(--a1),var(--a2));border-radius:8px;transition:width .4s ease;}
+.progress-fill.complete{background:#22C55E;}
+
+/* RESULT TABS */
+.result-tabs{display:flex;background:var(--card2);border-radius:13px;padding:4px;gap:3px;margin-bottom:14px;}
+.rtab{flex:1;padding:9px 4px;border-radius:10px;border:none;background:transparent;color:var(--mu);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.rtab.active{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;}
+
+/* VIDEO SETTINGS */
+.vid-opts{display:flex;gap:7px;}
+.vid-opt{flex:1;padding:9px 4px;border-radius:10px;border:2px solid var(--bd);background:transparent;color:var(--mu);font-size:11px;font-weight:700;cursor:pointer;transition:all .18s;font-family:inherit;}
+.vid-opt.active{border-color:#7C3AED;background:rgba(124,58,237,.15);color:#7C3AED;}
+
+/* GAP UTILS */
+.gap8{height:8px;}.gap12{height:12px;}.gap14{height:14px;}.gap18{height:18px;}
+.flex-row{display:flex;align-items:center;gap:8px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+</style>
+</head>
+<body class="light">
+
+<!-- TOAST -->
+<div id="toast" class="toast" style="display:none"></div>
+
+<!-- API KEY MODAL -->
+<div id="apiModal" class="modal-overlay">
+  <div class="modal">
+    <div style="font-size:36px;margin-bottom:12px">🔑</div>
+    <h2>API Key — Google Gemini</h2>
+    <p style="margin-bottom:14px">Grátis! Siga os passos:<br><br>
+    1. Acesse <a href="https://aistudio.google.com/apikey" target="_blank"><b>aistudio.google.com/apikey</b></a><br>
+    2. Clique em <b>"Create API Key"</b><br>
+    3. Copie a chave e cole abaixo 👇</p>
+    <input type="password" id="apiKeyInput" class="inp" placeholder="AIza..." style="margin-bottom:12px"/>
+    <button class="btn-primary" onclick="saveApiKey()">✅ Salvar e Continuar</button>
+    <p style="font-size:11px;color:#22C55E;margin-top:10px;text-align:center;font-weight:700">🆓 100% Grátis — Sem cartão de crédito</p>
+    <p style="font-size:11px;color:var(--mu);margin-top:6px;text-align:center">🔒 Salva só no seu navegador</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">🚀</div>
+      <div class="logo-text">Afiliado<span>Pro</span></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+      <button class="theme-btn" onclick="showApiModal()" style="font-size:12px;padding:7px 10px;font-weight:700">🔑 API</button>
+    </div>
+  </div>
+
+  <!-- PAGES -->
+  <div class="page" id="page-home">
+    <div class="hero">
+      <p>Bem-vindo de volta 👋</p>
+      <h1>AfiliadoPro</h1>
+      <button class="hero-btn" onclick="navTo('criar')">➕ Criar Conteúdo</button>
+    </div>
+    <div class="section">
+      <div class="stats">
+        <div class="card stat"><div class="icon">✨</div><div class="val">0</div><div class="lbl2">Posts</div></div>
+        <div class="card stat"><div class="icon">🎥</div><div class="val">0</div><div class="lbl2">Vídeos</div></div>
+        <div class="card stat"><div class="icon">📤</div><div class="val">0</div><div class="lbl2">Partilhados</div></div>
+      </div>
+      <div class="section-title">COMEÇAR AGORA</div>
+      <div class="action-list">
+        <button class="action-item" onclick="navTo('criar')">
+          <div class="action-icon" style="background:rgba(255,107,53,.15)">🔗</div>
+          <span class="action-label">Cole link Shopee / Mercado Livre</span>
+          <span class="action-arrow">›</span>
+        </button>
+        <button class="action-item" onclick="navTo('criar');setTimeout(()=>setMode('photo'),100)">
+          <div class="action-icon" style="background:rgba(255,107,53,.15)">📷</div>
+          <span class="action-label">Enviar foto do produto</span>
+          <span class="action-arrow">›</span>
+        </button>
+        <button class="action-item" onclick="navTo('video')">
+          <div class="action-icon" style="background:rgba(124,58,237,.15)">🎥</div>
+          <span class="action-label">Gerar Vídeo IA</span>
+          <span class="action-arrow">›</span>
+        </button>
+        <button class="action-item" onclick="navTo('checklist')">
+          <div class="action-icon" style="background:rgba(255,107,53,.15)">✅</div>
+          <span class="action-label">Checklist de configuração</span>
+          <span class="action-arrow">›</span>
+        </button>
+        <button class="action-item" onclick="navTo('pagamentos')">
+          <div class="action-icon" style="background:rgba(255,107,53,.15)">💳</div>
+          <span class="action-label">Configurar pagamentos</span>
+          <span class="action-arrow">›</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page-criar" style="display:none">
+    <div style="padding:18px 14px 32px">
+      <h2 style="font-size:22px;font-weight:900;margin-bottom:4px;color:var(--tx)">Criar Conteúdo</h2>
+      <p style="font-size:13px;color:var(--sub);margin-bottom:18px">Cole um link ou envie uma foto do produto</p>
+
+      <div class="seg" id="modeSeg">
+        <button class="seg-btn active" onclick="setMode('link')">🔗 Link Shopee/ML</button>
+        <button class="seg-btn" onclick="setMode('photo')">📷 Foto</button>
+      </div>
+      <div class="gap14"></div>
+
+      <!-- LINK MODE -->
+      <div id="linkPanel">
+        <div class="card card-p" style="margin-bottom:14px">
+          <span class="lbl">🔗 LINK DO PRODUTO</span>
+          <input type="url" id="productLink" class="inp" placeholder="https://shopee.com.br/produto… ou mercadolivre.com.br/…" oninput="checkLink()"/>
+          <div id="platBadge" style="margin-top:8px;display:none"></div>
+          <div style="margin-top:10px;padding:9px 12px;background:var(--card2);border-radius:9px">
+            <p style="color:var(--sub);font-size:11px;line-height:1.5">💡 A IA analisa o padrão da URL e gera Post, Reels, Stories e Roteiro de Vídeo completos.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHOTO MODE -->
+      <div id="photoPanel" style="display:none">
+        <div class="card card-p" style="margin-bottom:14px">
+          <span class="lbl">📷 FOTO DO PRODUTO</span>
+          <div id="photoPreview" style="display:none;position:relative">
+            <img id="photoImg" style="width:100%;border-radius:12px;max-height:220px;object-fit:cover;display:block" alt="produto"/>
+            <button onclick="clearPhoto()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:14px">✕</button>
+            <p style="color:#22C55E;font-size:12px;font-weight:700;margin-top:8px">✅ Foto carregada! Clique em Gerar.</p>
+          </div>
+          <div id="photoUpload">
+            <div style="margin-bottom:12px">
+              <p style="color:var(--sub);font-size:12px;font-weight:600;margin-bottom:7px">🌐 URL da imagem:</p>
+              <div class="flex-row">
+                <input type="url" id="imgUrlInput" class="inp" placeholder="https://…imagem.jpg" style="flex:1" onkeydown="if(event.key==='Enter')loadImgUrl()"/>
+                <button onclick="loadImgUrl()" style="background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;border-radius:11px;padding:11px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Carregar</button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin:14px 0">
+              <div style="flex:1;height:1px;background:var(--bd)"></div>
+              <span style="color:var(--mu);font-size:11px">ou</span>
+              <div style="flex:1;height:1px;background:var(--bd)"></div>
+            </div>
+            <label class="photo-label">
+              <input type="file" accept="image/*,image/heic" onchange="handlePhoto(event)" style="display:none"/>
+              <span style="font-size:44px;margin-bottom:10px">📷</span>
+              <p style="font-size:15px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:4px">Toque para enviar foto</p>
+              <p style="font-size:11px;color:var(--mu)">JPG · PNG · WEBP · HEIC</p>
+              <div class="choose-btn">Escolher Foto</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="generateBtn" onclick="generateContent()" disabled>✨ Gerar com IA</button>
+      <div class="gap18"></div>
+
+      <div id="loadingContent" style="display:none">
+        <div class="card"><div class="spinner-wrap"><div class="spinner"></div><p style="color:var(--mu);font-size:14px;font-weight:600">IA gerando conteúdo…</p></div></div>
+      </div>
+      <div id="errorContent" style="display:none">
+        <div class="card card-p" style="border-color:rgba(239,68,68,.3)">
+          <p id="errorMsg" style="color:#EF4444;font-size:13px;font-weight:600">❌ Erro ao gerar.</p>
+        </div>
+      </div>
+      <div id="resultContent" style="display:none">
+        <div class="card" id="productCard" style="overflow:hidden;margin-bottom:14px"></div>
+        <div class="result-tabs">
+          <button class="rtab active" onclick="setResultTab('post')">📸 Post</button>
+          <button class="rtab" onclick="setResultTab('reels')">🎬 Reels</button>
+          <button class="rtab" onclick="setResultTab('stories')">📱 Stories</button>
+          <button class="rtab" onclick="setResultTab('video')">🎥 Roteiro</button>
+        </div>
+        <div class="card card-p" id="resultPanel"></div>
+        <div class="gap14"></div>
+        <div id="sharePanel"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page-video" style="display:none">
+    <div style="padding:18px 14px 32px">
+      <h2 style="font-size:22px;font-weight:900;margin-bottom:3px;color:var(--tx)">Geração de Vídeo IA</h2>
+      <p style="font-size:13px;color:var(--sub);margin-bottom:18px">Kling · Google Veo · Runway · Pika</p>
+
+      <div class="seg" id="vidModeSeg">
+        <button class="seg-btn active" onclick="setVidMode('texto')">🎬 Texto → Vídeo</button>
+        <button class="seg-btn" onclick="setVidMode('imagem')">🖼 Imagem → Vídeo</button>
+      </div>
+      <div class="gap14"></div>
+
+      <div class="card card-p" style="margin-bottom:14px">
+        <span class="lbl">CONFIGURAÇÕES DO VÍDEO</span>
+        <p style="color:var(--sub);font-size:11px;font-weight:700;margin-bottom:6px">⏱ Duração</p>
+        <div class="vid-opts" style="margin-bottom:10px">
+          <button class="vid-opt active" onclick="setVidDur('8s',this)">8s</button>
+          <button class="vid-opt" onclick="setVidDur('15s',this)">15s</button>
+          <button class="vid-opt" onclick="setVidDur('30s',this)">30s</button>
+        </div>
+        <p style="color:var(--sub);font-size:11px;font-weight:700;margin-bottom:6px">📐 Formato</p>
+        <div class="vid-opts" style="margin-bottom:10px">
+          <button class="vid-opt active" onclick="setVidFmt('9:16',this)">📱 9:16</button>
+          <button class="vid-opt" onclick="setVidFmt('16:9',this)">🖥 16:9</button>
+          <button class="vid-opt" onclick="setVidFmt('1:1',this)">⬛ 1:1</button>
+        </div>
+        <p style="color:var(--sub);font-size:11px;font-weight:700;margin-bottom:6px">🎞 Qualidade</p>
+        <div class="vid-opts">
+          <button class="vid-opt active" onclick="setVidQual('HD',this)">720p HD</button>
+          <button class="vid-opt" onclick="setVidQual('FHD',this)">1080p FHD</button>
+          <button class="vid-opt" onclick="setVidQual('4K',this)">4K Ultra</button>
+        </div>
+      </div>
+
+      <div id="vidTextoPanel">
+        <div class="card card-p" style="margin-bottom:14px">
+          <span class="lbl">📝 DESCREVA O VÍDEO</span>
+          <textarea id="vidPrompt" class="inp" rows="5" placeholder="Ex: Mulher sorrindo na cozinha usando mini processador USB cortando alho em segundos, luz natural, fundo branco, estilo Reels viral para Shopee..." oninput="checkVidBtn();this.nextElementSibling.textContent=this.value.length+'/1000';this.value=this.value.slice(0,1000)"></textarea>
+          <p style="color:var(--mu);font-size:11px;text-align:right;margin-top:5px">0/1000</p>
+        </div>
+      </div>
+
+      <div id="vidImagemPanel" style="display:none">
+        <div class="card card-p" style="margin-bottom:14px">
+          <span class="lbl">🖼 IMAGEM DO PRODUTO</span>
+          <div id="vidImgPreview" style="display:none;position:relative">
+            <img id="vidImg" style="width:100%;border-radius:11px;max-height:200px;object-fit:cover;display:block" alt=""/>
+            <button onclick="clearVidImg()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:14px">✕</button>
+            <p style="color:#22C55E;font-size:12px;font-weight:700;margin-top:8px">✅ Pronto! A IA vai criar o prompt de vídeo.</p>
+          </div>
+          <label id="vidImgUpload" class="photo-label">
+            <input type="file" accept="image/*" onchange="handleVidImg(event)" style="display:none"/>
+            <span style="font-size:44px;margin-bottom:10px">🖼</span>
+            <p style="font-size:14px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:4px">Toque para enviar imagem</p>
+            <p style="font-size:11px;color:var(--mu);margin-bottom:0">JPG · PNG · WEBP</p>
+            <div style="background:linear-gradient(135deg,#7C3AED,#A855F7);color:#fff;border-radius:11px;padding:9px 22px;font-size:13px;font-weight:700;margin-top:14px">Escolher Imagem</div>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-primary video" id="vidGenerateBtn" onclick="generateVideo()" disabled>🎬 Gerar Prompts de Vídeo</button>
+      <div class="gap18"></div>
+
+      <div id="vidLoading" style="display:none">
+        <div class="card"><div class="spinner-wrap"><div class="spinner v"></div><p style="color:var(--mu);font-size:14px;font-weight:600">IA gerando prompts de vídeo…</p></div></div>
+      </div>
+      <div id="vidResult" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="page" id="page-checklist" style="display:none">
+    <div style="padding:18px 14px 32px">
+      <h2 style="font-size:22px;font-weight:900;margin-bottom:4px;color:var(--tx)">Checklist</h2>
+      <p style="font-size:13px;color:var(--sub);margin-bottom:18px">Configure tudo para começar a vender</p>
+      <div class="card card-p" style="margin-bottom:18px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+          <span style="font-size:14px;font-weight:800;color:var(--tx)">Progresso</span>
+          <span id="checkPct" class="chip" style="background:rgba(255,107,53,.15);color:var(--a1)">0/12 · 0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <p id="checkDone" style="display:none;color:#22C55E;font-size:13px;font-weight:700;margin-top:10px;text-align:center">🎉 Parabéns! Pronto para vender!</p>
+      </div>
+      <div id="checklistItems" style="display:flex;flex-direction:column;gap:9px"></div>
+    </div>
+  </div>
+
+  <div class="page" id="page-pagamentos" style="display:none">
+    <div style="padding:18px 14px 32px">
+      <h2 style="font-size:22px;font-weight:900;margin-bottom:4px;color:var(--tx)">Pagamentos</h2>
+      <p style="font-size:13px;color:var(--sub);margin-bottom:18px">Configure seus links de checkout</p>
+      <div id="pagList" style="display:flex;flex-direction:column;gap:14px"></div>
+    </div>
+  </div>
+
+  <div class="page" id="page-config" style="display:none">
+    <div style="padding:18px 14px 32px">
+      <h2 style="font-size:22px;font-weight:900;margin-bottom:22px;color:var(--tx)">Configurações</h2>
+      <span class="lbl">APARÊNCIA</span>
+      <div class="card" style="margin-bottom:22px">
+        <button onclick="setTheme('light')" class="action-item" id="themeLight" style="border-bottom:1px solid var(--bd);border-radius:0;padding:15px 16px">
+          <span style="font-size:20px;margin-right:2px">☀️</span>
+          <div style="flex:1;text-align:left"><p style="color:var(--tx);font-size:14px;font-weight:700;margin:0">Claro</p><p style="color:var(--mu);font-size:12px;margin:0">Sempre tema claro</p></div>
+          <div id="rb-light" class="radio-dot" style="width:23px;height:23px;border-radius:50%;border:2.5px solid var(--a1);background:var(--a1);display:flex;align-items:center;justify-content:center"><div style="width:8px;height:8px;border-radius:50%;background:#fff"></div></div>
+        </button>
+        <button onclick="setTheme('dark')" class="action-item" style="border-radius:0;padding:15px 16px">
+          <span style="font-size:20px;margin-right:2px">🌙</span>
+          <div style="flex:1;text-align:left"><p style="color:var(--tx);font-size:14px;font-weight:700;margin:0">Escuro</p><p style="color:var(--mu);font-size:12px;margin:0">Sempre tema escuro</p></div>
+          <div id="rb-dark" style="width:23px;height:23px;border-radius:50%;border:2.5px solid var(--bd);background:transparent"></div>
+        </button>
+      </div>
+      <span class="lbl">API KEY — GOOGLE GEMINI 🆓</span>
+      <div class="card card-p" style="margin-bottom:22px">
+        <p style="color:var(--sub);font-size:12px;margin-bottom:10px">Sua chave do Google Gemini está salva no navegador. <span style="color:#22C55E;font-weight:700">100% Grátis!</span></p>
+        <button onclick="showApiModal()" class="btn-primary" style="font-size:13px;padding:11px">🔑 Atualizar API Key</button>
+      </div>
+      <span class="lbl">SOBRE</span>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">Versão</span><span style="color:var(--mu)">1.0.0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">IA</span><span style="color:#22C55E;font-weight:700">Google Gemini 🆓</span></div>
+        <div style="display:flex;justify-content:space-between;padding:14px 16px"><span style="color:var(--tx);font-size:14px;font-weight:600">Plataformas</span><span style="color:var(--mu)">Shopee & ML</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-home" onclick="navTo('home')">
+      <span class="icon">🏠</span><span class="label">Início</span>
+    </button>
+    <button class="nav-btn" id="nav-criar" onclick="navTo('criar')">
+      <div class="nav-center">✨</div><span class="label">Criar</span>
+    </button>
+    <button class="nav-btn" id="nav-video" onclick="navTo('video')">
+      <span class="icon">🎥</span><span class="label">Vídeo IA</span>
+    </button>
+    <button class="nav-btn" id="nav-pagamentos" onclick="navTo('pagamentos')">
+      <span class="icon">💳</span><span class="label">Pagar</span>
+    </button>
+    <button class="nav-btn" id="nav-config" onclick="navTo('config')">
+      <span class="icon">⚙️</span><span class="label">Config</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+/* ── STATE ── */
+let apiKey = localStorage.getItem('ap_apikey') || '';
+let theme = localStorage.getItem('ap_theme') || 'light';
+let currentMode = 'link';
+let photoB64 = null, photoMime = null, photoSrc = null;
+let vidMode = 'texto', vidDur = '8s', vidFmt = '9:16', vidQual = 'HD';
+let vidImgB64 = null, vidImgMime = null;
+let currentResult = null, currentTab = 'post';
+let checkDone = JSON.parse(localStorage.getItem('ap_check') || '[]');
+let payLinks = JSON.parse(localStorage.getItem('ap_pay') || '{}');
+let sceneIdx = 0, sceneTimer = null;
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme(theme);
+  buildChecklist();
+  buildPagamentos();
+  if (apiKey) { document.getElementById('apiModal').style.display = 'none'; document.getElementById('app').style.display = 'flex'; }
+});
+
+/* ── API KEY ── */
+function saveApiKey() {
+  const v = document.getElementById('apiKeyInput').value.trim();
+  if (v.length < 10) { showToast('⚠️ Chave inválida. Verifique e tente novamente.'); return; }
+  apiKey = v; localStorage.setItem('ap_apikey', v);
+  document.getElementById('apiModal').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  showToast('✅ API Key do Gemini salva!');
+}
+function showApiModal() { document.getElementById('apiKeyInput').value = apiKey; document.getElementById('apiModal').style.display = 'flex'; }
+document.getElementById('apiKeyInput').addEventListener('keydown', e => { if(e.key==='Enter') saveApiKey(); });
+
+/* ── THEME ── */
+function applyTheme(t) {
+  theme = t; localStorage.setItem('ap_theme', t);
+  document.body.className = t;
+  document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+  document.getElementById('rb-light').style.background = t==='light' ? 'var(--a1)' : 'transparent';
+  document.getElementById('rb-light').style.borderColor = t==='light' ? 'var(--a1)' : 'var(--bd)';
+  document.getElementById('rb-dark').style.background = t==='dark' ? 'var(--a1)' : 'transparent';
+  document.getElementById('rb-dark').style.borderColor = t==='dark' ? 'var(--a1)' : 'var(--bd)';
+}
+function toggleTheme() { applyTheme(theme === 'dark' ? 'light' : 'dark'); }
+function setTheme(t) { applyTheme(t); }
+
+/* ── NAV ── */
+const pages = ['home','criar','video','checklist','pagamentos','config'];
+function navTo(p) {
+  pages.forEach(id => {
+    document.getElementById('page-'+id).style.display = 'none';
+    const nb = document.getElementById('nav-'+id);
+    if(nb) nb.classList.remove('active');
+  });
+  document.getElementById('page-'+p).style.display = 'block';
+  const nb = document.getElementById('nav-'+p);
+  if(nb) nb.classList.add('active');
+  // also handle checklist and pagamentos which don't have nav buttons
+  ['checklist'].forEach(id => {
+    const b = document.getElementById('nav-'+id);
+    if(b) b.classList.remove('active');
+  });
+}
+
+/* ── TOAST ── */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.style.display = 'none', 3000);
+}
+
+/* ── COPY ── */
+function doCopy(text, msg) {
+  try {
+    if (navigator.clipboard) { navigator.clipboard.writeText(text).then(() => showToast(msg || '📋 Copiado!')).catch(() => execCopy(text, msg)); }
+    else execCopy(text, msg);
+  } catch { execCopy(text, msg); }
+}
+function execCopy(text, msg) {
+  const el = document.createElement('textarea');
+  el.value = text; el.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(el); el.focus(); el.select();
+  try { document.execCommand('copy'); showToast(msg || '📋 Copiado!'); } catch { showToast('Copie o texto manualmente.'); }
+  document.body.removeChild(el);
+}
+
+/* ── SHARE ── */
+function shareText(text, platform) {
+  if (platform === 'whatsapp') window.open('https://wa.me/?text='+encodeURIComponent(text), '_blank');
+  else if (platform === 'facebook') window.open('https://facebook.com/sharer/sharer.php?quote='+encodeURIComponent(text), '_blank');
+  else if (platform === 'telegram') window.open('https://t.me/share/url?url=https://shopee.com.br&text='+encodeURIComponent(text), '_blank');
+  else if (platform === 'instagram') {
+    if (navigator.share) navigator.share({title:'AfiliadoPro',text}).catch(()=>{});
+    else { doCopy(text, '📸 Copiado! Abra o Instagram e cole.'); }
+  }
+}
+
+/* ── MODE ── */
+function setMode(m) {
+  currentMode = m;
+  const btns = document.querySelectorAll('#modeSeg .seg-btn');
+  btns.forEach((b,i) => b.classList.toggle('active', (m==='link'&&i===0)||(m==='photo'&&i===1)));
+  document.getElementById('linkPanel').style.display = m==='link' ? 'block' : 'none';
+  document.getElementById('photoPanel').style.display = m==='photo' ? 'block' : 'none';
+  checkGenerateBtn();
+}
+
+function checkLink() {
+  const v = document.getElementById('productLink').value;
+  const badge = document.getElementById('platBadge');
+  if (/shopee/i.test(v)) { badge.style.display='block'; badge.innerHTML='<span style="color:#22C55E;font-size:12px;font-weight:700">✅ 🛒 Shopee detectada!</span>'; }
+  else if (/mercadolivre|mercadolibre|meli\.com/i.test(v)) { badge.style.display='block'; badge.innerHTML='<span style="color:#22C55E;font-size:12px;font-weight:700">✅ 🛍 Mercado Livre detectado!</span>'; }
+  else { badge.style.display='none'; }
+  checkGenerateBtn();
+}
+
+function checkGenerateBtn() {
+  const link = document.getElementById('productLink').value.trim();
+  const ok = (currentMode==='link' && link.length>8) || (currentMode==='photo' && (!!photoB64 || document.getElementById('imgUrlInput').value.trim().length>5));
+  document.getElementById('generateBtn').disabled = !ok;
+}
+
+/* ── PHOTO ── */
+async function handlePhoto(e) {
+  const f = e.target.files?.[0]; if(!f) return;
+  photoMime = f.type; photoSrc = URL.createObjectURL(f);
+  photoB64 = await fileToB64(f);
+  showPhotoPreview(photoSrc);
+  showToast('✅ Foto carregada!');
+}
+function showPhotoPreview(src) {
+  document.getElementById('photoImg').src = src;
+  document.getElementById('photoPreview').style.display = 'block';
+  document.getElementById('photoUpload').style.display = 'none';
+  checkGenerateBtn();
+}
+function clearPhoto() {
+  photoB64 = null; photoMime = null; photoSrc = null;
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('photoUpload').style.display = 'block';
+  checkGenerateBtn();
+}
+async function loadImgUrl() {
+  const url = document.getElementById('imgUrlInput').value.trim();
+  if(!url) return;
+  try {
+    const r = await fetch('https://corsproxy.io/?'+encodeURIComponent(url));
+    const b = await r.blob();
+    photoMime = b.type||'image/jpeg'; photoB64 = await blobToB64(b);
+    photoSrc = URL.createObjectURL(b);
+    showPhotoPreview(photoSrc); showToast('✅ Imagem carregada!');
+  } catch {
+    photoSrc = url;
+    document.getElementById('photoImg').src = url;
+    document.getElementById('photoPreview').style.display = 'block';
+    document.getElementById('photoUpload').style.display = 'none';
+    showToast('⚠️ Imagem exibida. Use o link do produto para melhor resultado.');
+    checkGenerateBtn();
+  }
+}
+
+/* ── AI CALL — Google Gemini com fallback automático ── */
+async function callAI(messages, maxTokens=2000) {
+  // Converte formato messages para Gemini parts
+  const parts = [];
+  for (const msg of messages) {
+    if (Array.isArray(msg.content)) {
+      for (const c of msg.content) {
+        if (c.type === 'text') parts.push({ text: c.text });
+        else if (c.type === 'image') parts.push({ inlineData: { mimeType: c.source.media_type, data: c.source.data } });
+      }
+    } else {
+      parts.push({ text: msg.content });
+    }
+  }
+
+  const body = JSON.stringify({
+    contents: [{ parts }],
+    generationConfig: { maxOutputTokens: maxTokens, temperature: 0.7 }
+  });
+
+  // Tenta modelos em ordem — do mais novo ao mais compatível com free tier
+  const models = [
+    'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+  ];
+
+  let lastError = '';
+  for (const url of models) {
+    try {
+      const res = await fetch(`${url}?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body
+      });
+      const data = await res.json();
+      if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        return data.candidates[0].content.parts[0].text;
+      }
+      lastError = data.error?.message || 'Sem resposta';
+      // Se não for erro de modelo, para de tentar
+      if (!lastError.includes('not found') && !lastError.includes('quota') && !lastError.includes('not supported')) {
+        throw new Error(lastError);
+      }
+    } catch(e) {
+      lastError = e.message;
+      if (!lastError.includes('not found') && !lastError.includes('quota') && !lastError.includes('not supported')) {
+        throw e;
+      }
+    }
+  }
+  throw new Error('Chave inválida ou sem acesso ao Gemini. Verifique sua API Key em aistudio.google.com');
+}
+function parseJSON(raw) { const c=raw.replace(/```json|```/g,'').trim(); return JSON.parse(c.substring(c.indexOf('{'),c.lastIndexOf('}')+1)); }
+function fileToB64(f) { return new Promise((ok,er)=>{ const r=new FileReader(); r.onload=()=>ok(r.result.split(',')[1]); r.onerror=er; r.readAsDataURL(f); }); }
+function blobToB64(b) { return fileToB64(b); }
+
+/* ── GENERATE CONTENT ── */
+async function generateContent() {
+  if (!apiKey) { showApiModal(); return; }
+  const link = document.getElementById('productLink').value.trim();
+  document.getElementById('loadingContent').style.display = 'block';
+  document.getElementById('errorContent').style.display = 'none';
+  document.getElementById('resultContent').style.display = 'none';
+  document.getElementById('generateBtn').disabled = true;
+
+  try {
+    const prompt = `Especialista em marketing de afiliados brasileiro 2026.
+${currentMode==='link' ? 'Link do produto: '+link+'\nIdentifique o produto pelo padrão da URL.' : 'Analise a imagem do produto.'}
+Retorne SOMENTE JSON válido sem markdown:
+{"produto":"nome","emoji":"emoji","cor":"#hex","post":{"titulo":"título impactante","bullets":["✔ b1","✔ b2","✔ b3","✔ b4"],"rodape":"frase persuasiva","cta":"👉 Link na bio! [COLE SEU LINK]","hashtags":"#t1 #t2 #t3 #t4 #afiliado2026"},"reels":{"hook":"gancho 8 palavras","cenas":[{"tempo":"0-3s","camera":"ação","fala":"frase"},{"tempo":"3-8s","camera":"ação","fala":"frase"},{"tempo":"8-13s","camera":"ação","fala":"frase"},{"tempo":"13-15s","camera":"aponta","fala":"CTA"}],"legenda":"legenda+hashtags"},"stories":[{"tipo":"hook","texto":"IMPACTO","sub":"subtítulo"},{"tipo":"beneficios","itens":["✅ i1","✅ i2","✅ i3"]},{"tipo":"cta","texto":"Corra! 🔥","link":"[COLE SEU LINK]"}],"video":{"titulo":"título","duracao":"45s","musica":"estilo","cenas":[{"tempo":"0-5s","visual":"show","audio":"fala"},{"tempo":"5-15s","visual":"show","audio":"fala"},{"tempo":"15-25s","visual":"demo","audio":"fala"},{"tempo":"25-30s","visual":"CTA","audio":"link"}],"legenda":"legenda+hashtags"}}`;
+
+    const content = [];
+    if (currentMode==='photo' && photoB64) content.push({type:'image',source:{type:'base64',media_type:photoMime||'image/jpeg',data:photoB64}});
+    content.push({type:'text',text:prompt});
+
+    const raw = await callAI([{role:'user',content}]);
+    currentResult = parseJSON(raw);
+    currentTab = 'post';
+    renderResult();
+    showToast('✅ Conteúdo gerado!');
+  } catch(e) {
+    console.error(e);
+    document.getElementById('errorMsg').textContent = '❌ ' + (e.message || 'Erro ao gerar. Verifique sua API Key e tente novamente.');
+    document.getElementById('errorContent').style.display = 'block';
+  }
+  document.getElementById('loadingContent').style.display = 'none';
+  checkGenerateBtn();
+}
+
+function renderResult() {
+  const r = currentResult;
+  // product card
+  const pc = document.getElementById('productCard');
+  const imgHtml = photoSrc ? `<img src="${photoSrc}" style="width:100%;height:170px;object-fit:cover;display:block" alt="produto"/>` :
+    `<div style="height:120px;background:linear-gradient(135deg,${r.cor||'#FF6B35'}33,#E8A02033);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px"><span style="font-size:52px">${r.emoji||'📦'}</span><span class="chip" style="background:rgba(255,107,53,.2);color:var(--a1)">🔥 VIRAL NA SHOPEE</span></div>`;
+  pc.innerHTML = imgHtml + `<div style="padding:11px 15px 13px;display:flex;align-items:center;gap:10px"><span class="chip" style="background:rgba(34,197,94,.2);color:#22C55E">✅ GERADO</span><span style="color:var(--tx);font-size:13px;font-weight:700">${r.produto}</span></div>`;
+
+  setResultTab(currentTab);
+  document.getElementById('resultContent').style.display = 'block';
+  document.getElementById('sharePanel').innerHTML = buildShareBar();
+}
+
+function setResultTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.rtab').forEach((b,i) => {
+    const tabs = ['post','reels','stories','video'];
+    b.classList.toggle('active', tabs[i]===tab);
+  });
+  const r = currentResult; if(!r) return;
+  const panel = document.getElementById('resultPanel');
+
+  if (tab==='post') {
+    panel.innerHTML = `
+      <p style="color:var(--tx);font-size:16px;font-weight:900;margin:0 0 12px;line-height:1.3">${r.post.titulo}</p>
+      ${r.post.bullets.map(b=>`<p style="color:var(--tx);font-size:13px;margin:6px 0;font-weight:600">${b}</p>`).join('')}
+      <p style="color:var(--sub);font-size:13px;margin:10px 0 8px;line-height:1.6">${r.post.rodape}</p>
+      <p style="color:#FF6B35;font-size:13px;font-weight:700;margin:0 0 10px">${r.post.cta}</p>
+      <p style="color:#7C8CFF;font-size:11px;line-height:1.8">${r.post.hashtags}</p>`;
+  } else if (tab==='reels') {
+    panel.innerHTML = `
+      <div style="background:rgba(255,107,53,.15);border-radius:11px;padding:12px;margin-bottom:14px">
+        <span class="lbl">🎣 HOOK</span>
+        <p style="color:#FF6B35;font-size:15px;font-weight:800;margin:0">"${r.reels.hook}"</p>
+      </div>
+      ${r.reels.cenas.map((c,i)=>`
+        <div style="display:flex;gap:12px;padding-bottom:12px;margin-bottom:12px;${i<3?'border-bottom:1px solid var(--bd)':''}">
+          <div style="background:linear-gradient(135deg,#FF6B35,#E8A020);min-width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="color:#fff;font-size:9px;font-weight:900;text-align:center;line-height:1.2;padding:0 3px">${c.tempo}</span></div>
+          <div><p style="color:var(--mu);font-size:11px;font-weight:700;margin:0 0 2px">📹 ${c.camera}</p><p style="color:var(--tx);font-size:12px;font-weight:700;margin:0;line-height:1.4">${c.fala}</p></div>
+        </div>`).join('')}
+      <div style="background:var(--card2);border-radius:11px;padding:12px">
+        <span class="lbl">📝 LEGENDA</span>
+        <p style="color:var(--tx);font-size:11px;line-height:1.8;margin:0;white-space:pre-wrap">${r.reels.legenda}</p>
+      </div>`;
+  } else if (tab==='stories') {
+    panel.innerHTML = r.stories.map((s,i)=>`
+      <div class="story-card" style="margin-bottom:${i<2?'12px':'0'}">
+        <div class="story-header"><span>STORY ${i+1} · ${s.tipo.toUpperCase()}</span></div>
+        <div class="story-body">
+          ${s.tipo==='hook' ? `<p style="color:var(--tx);font-size:18px;font-weight:900;margin:0 0 5px">${s.texto}</p><p style="color:#E8A020;font-size:13px;font-weight:700;margin:0">${s.sub}</p>` : ''}
+          ${s.tipo==='beneficios' ? s.itens.map(it=>`<p style="color:var(--tx);font-size:13px;font-weight:700;margin:4px 0">${it}</p>`).join('') : ''}
+          ${s.tipo==='cta' ? `<p style="color:var(--tx);font-size:15px;font-weight:800;margin:0 0 8px">${s.texto}</p><div style="background:rgba(255,107,53,.15);border-radius:9px;padding:8px 12px;display:inline-block"><p style="color:#FF6B35;font-size:12px;font-weight:800;margin:0">🔗 ${s.link}</p></div>` : ''}
+        </div>
+      </div>`).join('');
+  } else if (tab==='video') {
+    const v = r.video;
+    panel.innerHTML = `
+      <div style="background:rgba(255,107,53,.15);border-radius:11px;padding:12px;margin-bottom:14px">
+        <span class="lbl">🎥 ${v.duracao} · 🎵 ${v.musica}</span>
+        <p style="color:var(--tx);font-size:14px;font-weight:900;margin:0">${v.titulo}</p>
+      </div>
+      ${v.cenas.map((c,i)=>`
+        <div style="display:flex;gap:12px;padding-bottom:12px;margin-bottom:12px;${i<3?'border-bottom:1px solid var(--bd)':''}">
+          <div style="background:rgba(107,77,230,.15);min-width:50px;height:50px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(155,122,255,.4)"><span style="color:#9B7AFF;font-size:9px;font-weight:900;text-align:center;line-height:1.2;padding:0 3px">${c.tempo}</span></div>
+          <div><p style="color:var(--mu);font-size:11px;font-weight:700;margin:0 0 2px">🎬 ${c.visual}</p><p style="color:var(--tx);font-size:12px;font-weight:700;margin:0">🎤 ${c.audio}</p></div>
+        </div>`).join('')}`;
+  }
+}
+
+function getShareText() {
+  const r = currentResult; if(!r) return '';
+  const {post,reels,stories,video} = r;
+  if(currentTab==='post') return `${post.titulo}\n\n${post.bullets.join('\n')}\n\n${post.rodape}\n\n${post.cta}\n\n${post.hashtags}`;
+  if(currentTab==='reels') return reels.legenda;
+  if(currentTab==='video') return video?.legenda||'';
+  return stories.map((s,i)=>s.tipo==='hook'?`STORY ${i+1}:\n${s.texto}\n${s.sub}`:s.tipo==='beneficios'?`STORY ${i+1}:\n${s.itens.join('\n')}`:`STORY ${i+1}:\n${s.texto}\n🔗 ${s.link}`).join('\n\n');
+}
+
+function buildShareBar() {
+  return `
+    <span class="lbl">COMPARTILHAR</span>
+    <div class="grid2" style="margin-bottom:10px">
+      <button class="btn-share" style="background:#25D366" onclick="shareText(getShareText(),'whatsapp')">📱 WhatsApp</button>
+      <button class="btn-share" style="background:#1877F2" onclick="shareText(getShareText(),'facebook')">👍 Facebook</button>
+      <button class="btn-share" style="background:linear-gradient(135deg,#f09433,#dc2743,#bc1888)" onclick="shareText(getShareText(),'instagram')">📸 Instagram</button>
+      <button class="btn-share" style="background:#0088CC" onclick="shareText(getShareText(),'telegram')">✈️ Telegram</button>
+    </div>
+    <button class="btn-copy" onclick="doCopy(getShareText(),'📋 Conteúdo copiado!')">📋 Copiar Conteúdo</button>
+    <div style="margin-top:10px;padding:10px 12px;background:rgba(240,148,51,.15);border-radius:10px;border:1px solid rgba(240,148,51,.3)">
+      <p style="color:#c0642a;font-size:11px;margin:0;line-height:1.5">📸 <b>Instagram:</b> toca no botão → menu do celular → escolhe Instagram. Se não aparecer, usa "Copiar".</p>
+    </div>`;
+}
+
+/* ── VIDEO IA ── */
+function setVidMode(m) {
+  vidMode = m;
+  const btns = document.querySelectorAll('#vidModeSeg .seg-btn');
+  btns.forEach((b,i) => b.classList.toggle('active', (m==='texto'&&i===0)||(m==='imagem'&&i===1)));
+  document.getElementById('vidTextoPanel').style.display = m==='texto'?'block':'none';
+  document.getElementById('vidImagemPanel').style.display = m==='imagem'?'block':'none';
+  checkVidBtn();
+}
+function setVidDur(v,el) { vidDur=v; document.querySelectorAll('.vid-opts:nth-of-type(1) .vid-opt').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
+function setVidFmt(v,el) { vidFmt=v; el.parentElement.querySelectorAll('.vid-opt').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
+function setVidQual(v,el) { vidQual=v; el.parentElement.querySelectorAll('.vid-opt').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
+
+function checkVidBtn() {
+  const txt = document.getElementById('vidPrompt').value.trim();
+  const ok = (vidMode==='texto'&&txt.length>5)||(vidMode==='imagem'&&!!vidImgB64);
+  document.getElementById('vidGenerateBtn').disabled = !ok;
+}
+document.getElementById('vidPrompt').addEventListener('input', checkVidBtn);
+
+async function handleVidImg(e) {
+  const f = e.target.files?.[0]; if(!f) return;
+  vidImgMime = f.type; vidImgB64 = await fileToB64(f);
+  document.getElementById('vidImg').src = URL.createObjectURL(f);
+  document.getElementById('vidImgPreview').style.display = 'block';
+  document.getElementById('vidImgUpload').style.display = 'none';
+  showToast('✅ Imagem carregada!'); checkVidBtn();
+}
+function clearVidImg() {
+  vidImgB64=null;vidImgMime=null;
+  document.getElementById('vidImgPreview').style.display='none';
+  document.getElementById('vidImgUpload').style.display='flex';
+  checkVidBtn();
+}
+
+async function generateVideo() {
+  if (!apiKey) { showApiModal(); return; }
+  document.getElementById('vidLoading').style.display='block';
+  document.getElementById('vidResult').style.display='none';
+  document.getElementById('vidGenerateBtn').disabled=true;
+  if(sceneTimer) clearInterval(sceneTimer);
+
+  try {
+    const ctx = vidMode==='imagem' ? 'Analise esta imagem de produto afiliado e crie prompts de vídeo viral.' : `Produto/cena: "${document.getElementById('vidPrompt').value}"`;
+    const content = [];
+    if(vidMode==='imagem'&&vidImgB64) content.push({type:'image',source:{type:'base64',media_type:vidImgMime||'image/jpeg',data:vidImgB64}});
+    content.push({type:'text',text:`Especialista em vídeos virais para afiliados 2026.
+${ctx}
+Duração: ${vidDur} | Formato: ${vidFmt} | Qualidade: ${vidQual}
+JSON puro:
+{"titulo":"título","storyboard":[{"cena":1,"descricao":"cena visual","tempo":"0-3s","emoji":"🎬"},{"cena":2,"descricao":"cena","tempo":"3-6s","emoji":"✨"},{"cena":3,"descricao":"CTA final","tempo":"6-${vidDur}","emoji":"🔥"}],"prompts":{"kling":"prompt inglês Kling AI cinematic product viral","veo":"prompt inglês Google Veo 3 photorealistic 9:16","runway":"prompt inglês Runway Gen-4 smooth motion","pika":"prompt inglês Pika Labs text overlay"},"negativo":"blurry, low quality, watermark, text, dark, grainy","audio":"sugestão trilha/narração","dicas":["dica 1","dica 2","dica 3"]}`});
+
+    const raw = await callAI([{role:'user',content}]);
+    const res = parseJSON(raw);
+    renderVideoResult(res);
+    showToast('✅ Prompts gerados!');
+  } catch(e) { console.error(e); showToast('❌ Erro ao gerar. Tente novamente.'); }
+
+  document.getElementById('vidLoading').style.display='none';
+  checkVidBtn();
+}
+
+function renderVideoResult(r) {
+  const platColors = {kling:'#FF4081',veo:'#4285F4',runway:'#00D4FF',pika:'#F59E0B'};
+  const platNames = {kling:'🎬 Kling AI',veo:'🔷 Google Veo',runway:'🚀 Runway Gen-4',pika:'⚡ Pika Labs'};
+  const platUrls = {kling:'https://klingai.com',veo:'https://labs.google/veo',runway:'https://app.runwayml.com',pika:'https://pika.art'};
+  const platFree = {kling:'Ilimitado no free',veo:'Waitlist',runway:'125 créditos',pika:'Créditos diários'};
+
+  const sbHtml = r.storyboard.map((s,i)=>`
+    <div id="sb${i}" class="sb-scene${i===0?' active':''}" style="background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(168,85,247,.2))">
+      <span style="font-size:56px;margin-bottom:10px">${s.emoji}</span>
+      <p style="color:#fff;font-size:13px;font-weight:700;text-align:center;margin:0 0 8px;line-height:1.4">${s.descricao}</p>
+      <span style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px">${s.tempo}</span>
+    </div>`).join('');
+
+  const dotsHtml = r.storyboard.map((_,i)=>`<div id="dot${i}" class="sb-dot${i===0?' active':''}" onclick="goScene(${i})"></div>`).join('');
+
+  const platHtml = Object.keys(r.prompts).map(k=>`
+    <div class="plat-card" style="border:1px solid ${platColors[k]}33;margin-bottom:12px">
+      <div class="plat-header" style="background:${platColors[k]}18">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div><p style="color:var(--tx);font-size:13px;font-weight:800;margin:0">${platNames[k]}</p><p style="color:var(--mu);font-size:10px;margin:0">${platFree[k]}</p></div>
+        </div>
+        <button class="plat-open" style="background:${platColors[k]}" onclick="window.open('${platUrls[k]}','_blank')">Abrir →</button>
+      </div>
+      <div class="plat-body" style="background:var(--card2)">
+        <p style="color:var(--sub);font-size:12px;margin:0 0 8px;line-height:1.5;font-style:italic">"${r.prompts[k]}"</p>
+        <button onclick="doCopy('${r.prompts[k].replace(/'/g,"\\'")}','📋 Prompt copiado!')" style="background:${platColors[k]}18;color:${platColors[k]};border:1px solid ${platColors[k]}33;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">📋 Copiar Prompt</button>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('vidResult').innerHTML = `
+    <div class="card" style="overflow:hidden;margin-bottom:14px">
+      <div style="background:linear-gradient(135deg,#7C3AED,#A855F7);padding:14px 16px">
+        <p style="color:rgba(255,255,255,.8);font-size:10px;font-weight:800;letter-spacing:1.5px;margin:0 0 3px">🎬 STORYBOARD · ${vidDur} · ${vidFmt} · ${vidQual}</p>
+        <p style="color:#fff;font-size:15px;font-weight:900;margin:0">${r.titulo}</p>
+      </div>
+      <div class="storyboard-preview">${sbHtml}<div class="sb-dots">${dotsHtml}</div></div>
+      <div style="padding:12px 16px">${r.storyboard.map((s,i)=>`
+        <div onclick="goScene(${i})" style="display:flex;gap:10px;margin-bottom:8px;cursor:pointer;align-items:center" id="sbrow${i}">
+          <div style="width:32px;height:32px;border-radius:9px;background:${i===0?'linear-gradient(135deg,#7C3AED,#A855F7)':'rgba(124,58,237,.2)'};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${s.emoji}</div>
+          <div><p style="color:var(--tx);font-size:12px;font-weight:700;margin:0">${s.descricao}</p><p style="color:var(--mu);font-size:10px;margin:0">${s.tempo}</p></div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="card card-p" style="margin-bottom:14px">
+      <span class="lbl">🎯 PROMPTS POR PLATAFORMA</span>${platHtml}
+    </div>
+    <div class="card card-p" style="margin-bottom:14px">
+      <span class="lbl">🎵 ÁUDIO SUGERIDO</span>
+      <p style="color:var(--tx);font-size:13px;font-weight:600;margin:0 0 14px;line-height:1.5">${r.audio}</p>
+      <span class="lbl">💡 DICAS</span>
+      ${r.dicas.map((d,i)=>`<div style="display:flex;gap:10px;margin-bottom:8px"><span style="color:#7C3AED;font-size:13px;font-weight:800;flex-shrink:0">${i+1}.</span><p style="color:var(--sub);font-size:12px;margin:0;line-height:1.5">${d}</p></div>`).join('')}
+    </div>
+    <div class="card card-p">
+      <span class="lbl">⛔ NEGATIVE PROMPT</span>
+      <p style="color:var(--sub);font-size:12px;margin:0 0 10px;line-height:1.5">${r.negativo}</p>
+      <button onclick="doCopy('${r.negativo.replace(/'/g,"\\'")}','📋 Copiado!')" style="background:var(--card2);color:var(--mu);border:1px solid var(--bd);border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">📋 Copiar</button>
+    </div>`;
+
+  document.getElementById('vidResult').style.display='block';
+  sceneIdx=0;
+  sceneTimer = setInterval(()=>goScene((sceneIdx+1)%r.storyboard.length),2200);
+}
+
+window.goScene = function(i) {
+  const sb = document.querySelectorAll('.sb-scene');
+  const dots = document.querySelectorAll('.sb-dot');
+  sb.forEach((el,j)=>el.classList.toggle('active',j===i));
+  dots.forEach((el,j)=>el.classList.toggle('active',j===i));
+  sceneIdx=i;
+};
+
+/* ── CHECKLIST ── */
+const CHECKS = [
+  {id:'c1',l:'Criar conta Shopee Afiliados',url:'https://affiliate.shopee.com.br'},
+  {id:'c2',l:'Ativar conta ML Afiliados',url:'https://afiliados.mercadolivre.com.br'},
+  {id:'c3',l:'Configurar Hotmart ou Kiwify',url:null},
+  {id:'c4',l:'Configurar Mercado Pago ou PagBank',url:null},
+  {id:'c5',l:'Gerar primeiro Post com IA ✨',url:null},
+  {id:'c6',l:'Gerar primeiro Reels 🎬',url:null},
+  {id:'c7',l:'Gerar primeiro Stories 📱',url:null},
+  {id:'c8',l:'Gerar Vídeo IA com Kling 🎥',url:'https://klingai.com'},
+  {id:'c9',l:'Compartilhar no Instagram',url:null},
+  {id:'c10',l:'Compartilhar no WhatsApp',url:null},
+  {id:'c11',l:'Subir projeto no GitHub',url:'https://github.com'},
+  {id:'c12',l:'Fazer deploy no Vercel 🚀',url:'https://vercel.com'},
+];
+
+function buildChecklist() {
+  const el = document.getElementById('checklistItems');
+  el.innerHTML = CHECKS.map(c=>`
+    <div class="card check-item" id="ci-${c.id}" style="opacity:${checkDone.includes(c.id)?.72:1}">
+      <div class="check-box${checkDone.includes(c.id)?' done':''}" onclick="toggleCheck('${c.id}')">${checkDone.includes(c.id)?'<span style="color:#fff;font-size:13px;font-weight:900">✓</span>':''}</div>
+      <span class="check-label${checkDone.includes(c.id)?' done':''}">${c.l}</span>
+      ${c.url?`<a href="${c.url}" target="_blank" style="color:#FF6B35;font-size:11px;font-weight:700;text-decoration:none;flex-shrink:0">Abrir →</a>`:''}
+    </div>`).join('');
+  updateProgress();
+}
+
+function toggleCheck(id) {
+  if(checkDone.includes(id)) checkDone=checkDone.filter(x=>x!==id); else checkDone.push(id);
+  localStorage.setItem('ap_check',JSON.stringify(checkDone));
+  buildChecklist();
+}
+
+function updateProgress() {
+  const pct = Math.round(checkDone.length/CHECKS.length*100);
+  document.getElementById('checkPct').textContent = `${checkDone.length}/${CHECKS.length} · ${pct}%`;
+  document.getElementById('checkPct').style.background = pct===100?'rgba(34,197,94,.2)':'rgba(255,107,53,.15)';
+  document.getElementById('checkPct').style.color = pct===100?'#22C55E':'#FF6B35';
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressFill').className = 'progress-fill'+(pct===100?' complete':'');
+  document.getElementById('checkDone').style.display = pct===100?'block':'none';
+}
+
+/* ── PAGAMENTOS ── */
+const PAGS = [
+  {k:'hotmart',n:'Hotmart',i:'🔥',s:'Cursos e infoprodutos',bg:'linear-gradient(135deg,#FF4C00,#FF7A00)',url:'https://hotmart.com'},
+  {k:'kiwify',n:'Kiwify',i:'🥝',s:'Produtos digitais',bg:'linear-gradient(135deg,#00B894,#00CEC9)',url:'https://kiwify.com.br'},
+  {k:'mpago',n:'Mercado Pago',i:'💳',s:'Links de pagamento',bg:'linear-gradient(135deg,#009EE3,#00BFFF)',url:'https://mpago.la'},
+  {k:'pagbank',n:'PagBank',i:'🏦',s:'PagSeguro / PagBank',bg:'linear-gradient(135deg,#F5A623,#F7C948)',url:'https://pagbank.com.br'},
+];
+
+function buildPagamentos() {
+  document.getElementById('pagList').innerHTML = PAGS.map(p=>`
+    <div class="card card-p">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:13px">
+        <div style="width:46px;height:46px;border-radius:14px;background:${p.bg};display:flex;align-items:center;justify-content:center;font-size:24px">${p.i}</div>
+        <div style="flex:1"><p style="color:var(--tx);font-size:15px;font-weight:800;margin:0">${p.n}</p><p style="color:var(--mu);font-size:12px;margin:0">${p.s}</p></div>
+        <span id="savedBadge-${p.k}" class="chip" style="background:rgba(34,197,94,.2);color:#22C55E;display:${payLinks[p.k]?'inline-block':'none'}">✓ Salvo</span>
+      </div>
+      <input type="url" id="pay-${p.k}" class="inp" placeholder="Cole seu link ${p.n}…" value="${payLinks[p.k]||''}" oninput="savePay('${p.k}',this.value)"/>
+      <button onclick="openPay('${p.k}','${p.url}')" style="width:100%;background:${p.bg};color:${p.k==='pagbank'?'#111':'#fff'};border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;margin-top:12px;font-family:inherit">${p.i} Acessar ${p.n}</button>
+    </div>`).join('');
+}
+function savePay(k,v) { payLinks[k]=v; localStorage.setItem('ap_pay',JSON.stringify(payLinks)); document.getElementById('savedBadge-'+k).style.display=v?'inline-block':'none'; }
+function openPay(k,fb) { window.open(payLinks[k]||fb,'_blank'); }
+</script>
+</body>
+</html>
