@@ -629,9 +629,8 @@ async function loadImgUrl() {
   }
 }
 
-/* ── AI CALL — Google Gemini com fallback automático ── */
+/* ── AI CALL — Google Gemini via proxy (sem CORS) ── */
 async function callAI(messages, maxTokens=2000) {
-  // Converte formato messages para Gemini parts
   const parts = [];
   for (const msg of messages) {
     if (Array.isArray(msg.content)) {
@@ -644,44 +643,40 @@ async function callAI(messages, maxTokens=2000) {
     }
   }
 
-  const body = JSON.stringify({
+  const body = {
     contents: [{ parts }],
     generationConfig: { maxOutputTokens: maxTokens, temperature: 0.7 }
-  });
+  };
 
-  // Tenta modelos em ordem — do mais novo ao mais compatível com free tier
-  const models = [
-    'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+  // Tenta direto primeiro, depois proxy
+  const endpoints = [
+    { url: `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, direct: true },
+    { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, direct: true },
+    { url: `https://corsproxy.io/?${encodeURIComponent(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`)}`, direct: false },
+    { url: `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`)}`, direct: false },
   ];
 
-  let lastError = '';
-  for (const url of models) {
+  let lastError = 'Erro desconhecido';
+  for (const ep of endpoints) {
     try {
-      const res = await fetch(`${url}?key=${apiKey}`, {
+      const res = await fetch(ep.url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body
+        body: JSON.stringify(body)
       });
       const data = await res.json();
-      if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        return data.candidates[0].content.parts[0].text;
-      }
-      lastError = data.error?.message || 'Sem resposta';
-      // Se não for erro de modelo, para de tentar
-      if (!lastError.includes('not found') && !lastError.includes('quota') && !lastError.includes('not supported')) {
-        throw new Error(lastError);
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (text) return text;
+      lastError = data.error?.message || 'Sem resposta da IA';
+      if (lastError.includes('API_KEY_INVALID') || lastError.includes('API key not valid')) {
+        throw new Error('Chave de API inválida. Verifique em aistudio.google.com');
       }
     } catch(e) {
       lastError = e.message;
-      if (!lastError.includes('not found') && !lastError.includes('quota') && !lastError.includes('not supported')) {
-        throw e;
-      }
+      if (lastError.includes('inválida') || lastError.includes('invalid')) throw e;
     }
   }
-  throw new Error('Chave inválida ou sem acesso ao Gemini. Verifique sua API Key em aistudio.google.com');
+  throw new Error('Não foi possível conectar ao Gemini. Verifique sua API Key.');
 }
 function parseJSON(raw) { const c=raw.replace(/```json|```/g,'').trim(); return JSON.parse(c.substring(c.indexOf('{'),c.lastIndexOf('}')+1)); }
 function fileToB64(f) { return new Promise((ok,er)=>{ const r=new FileReader(); r.onload=()=>ok(r.result.split(',')[1]); r.onerror=er; r.readAsDataURL(f); }); }
