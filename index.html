@@ -170,17 +170,16 @@ textarea.inp{resize:vertical;}
 <!-- API KEY MODAL -->
 <div id="apiModal" class="modal-overlay">
   <div class="modal">
-    <div style="font-size:36px;margin-bottom:12px">🤗</div>
-    <h2>API Key — Hugging Face</h2>
-    <p style="margin-bottom:14px">100% grátis, só precisa de email!<br><br>
-    1. Acesse <a href="https://huggingface.co/join" target="_blank"><b>huggingface.co/join</b></a><br>
+    <div style="font-size:36px;margin-bottom:12px">🔑</div>
+    <h2>API Key — Mistral AI</h2>
+    <p style="margin-bottom:14px">Grátis, sem cartão!<br><br>
+    1. Acesse <a href="https://console.mistral.ai" target="_blank"><b>console.mistral.ai</b></a><br>
     2. Crie conta com email e senha<br>
-    3. Vá em <a href="https://huggingface.co/settings/tokens" target="_blank"><b>huggingface.co/settings/tokens</b></a><br>
-    4. Clique <b>"New token"</b> → tipo <b>"Read"</b><br>
-    5. Copie a chave e cole abaixo 👇</p>
-    <input type="password" id="apiKeyInput" class="inp" placeholder="hf_..." style="margin-bottom:12px"/>
+    3. Vá em <b>"API Keys"</b> → <b>"Create new key"</b><br>
+    4. Copie a chave e cole abaixo 👇</p>
+    <input type="password" id="apiKeyInput" class="inp" placeholder="Chave Mistral AI..." style="margin-bottom:12px"/>
     <button class="btn-primary" onclick="saveApiKey()">✅ Salvar e Continuar</button>
-    <p style="font-size:11px;color:#22C55E;margin-top:10px;text-align:center;font-weight:700">🆓 100% Grátis — Sem cartão de crédito</p>
+    <p style="font-size:11px;color:#22C55E;margin-top:10px;text-align:center;font-weight:700">🆓 Grátis — Sem cartão de crédito</p>
     <p style="font-size:11px;color:var(--mu);margin-top:6px;text-align:center">🔒 Salva só no seu navegador</p>
   </div>
 </div>
@@ -434,15 +433,15 @@ textarea.inp{resize:vertical;}
           <div id="rb-dark" style="width:23px;height:23px;border-radius:50%;border:2.5px solid var(--bd);background:transparent"></div>
         </button>
       </div>
-      <span class="lbl">API KEY — HUGGING FACE 🆓</span>
+      <span class="lbl">API KEY — MISTRAL AI 🆓</span>
       <div class="card card-p" style="margin-bottom:22px">
-        <p style="color:var(--sub);font-size:12px;margin-bottom:10px">Sua chave Hugging Face está salva. <span style="color:#22C55E;font-weight:700">100% Grátis!</span></p>
+        <p style="color:var(--sub);font-size:12px;margin-bottom:10px">Sua chave Mistral AI está salva. <span style="color:#22C55E;font-weight:700">Grátis!</span></p>
         <button onclick="showApiModal()" class="btn-primary" style="font-size:13px;padding:11px">🔑 Atualizar API Key</button>
       </div>
       <span class="lbl">SOBRE</span>
       <div class="card">
         <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">Versão</span><span style="color:var(--mu)">1.0.0</span></div>
-        <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">IA</span><span style="color:#22C55E;font-weight:700">Hugging Face 🆓</span></div>
+        <div style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)"><span style="color:var(--tx);font-size:14px;font-weight:600">IA</span><span style="color:#22C55E;font-weight:700">Mistral AI 🆓</span></div>
         <div style="display:flex;justify-content:space-between;padding:14px 16px"><span style="color:var(--tx);font-size:14px;font-weight:600">Plataformas</span><span style="color:var(--mu)">Shopee & ML</span></div>
       </div>
     </div>
@@ -631,7 +630,7 @@ async function loadImgUrl() {
   }
 }
 
-/* ── AI CALL — Hugging Face (100% grátis, sem CORS) ── */
+/* ── AI CALL — Mistral AI (grátis, sem cartão, sem CORS) ── */
 async function callAI(messages, maxTokens=2000) {
   let prompt = '';
   for (const msg of messages) {
@@ -644,54 +643,32 @@ async function callAI(messages, maxTokens=2000) {
     }
   }
 
-  const models = [
-    'mistralai/Mistral-7B-Instruct-v0.3',
-    'mistralai/Mixtral-8x7B-Instruct-v0.1',
-    'HuggingFaceH4/zephyr-7b-beta',
-    'microsoft/Phi-3-mini-4k-instruct',
-  ];
+  const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'mistral-small-latest',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: maxTokens,
+      temperature: 0.7
+    })
+  });
 
-  for (const model of models) {
-    try {
-      const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          inputs: `<s>[INST] ${prompt} [/INST]`,
-          parameters: {
-            max_new_tokens: maxTokens,
-            temperature: 0.7,
-            return_full_text: false
-          }
-        })
-      });
+  const data = await res.json();
 
-      if (res.status === 401 || res.status === 403) {
-        throw new Error('Chave inválida. Verifique em huggingface.co/settings/tokens');
-      }
-
-      const data = await res.json();
-
-      // Modelo ainda carregando
-      if (data.error && data.error.includes('loading')) {
-        await new Promise(r => setTimeout(r, 3000));
-        continue;
-      }
-
-      const text = Array.isArray(data)
-        ? data[0]?.generated_text
-        : data?.generated_text;
-
-      if (text && text.trim().length > 10) return text.trim();
-    } catch(e) {
-      if (e.message.includes('inválida') || e.message.includes('invalid')) throw e;
-      continue;
-    }
+  if (res.status === 401 || res.status === 403) {
+    throw new Error('Chave inválida. Verifique em console.mistral.ai');
   }
-  throw new Error('IA temporariamente indisponível. Aguarde 1 minuto e tente novamente.');
+  if (!res.ok) {
+    throw new Error(data.message || data.error?.message || 'Erro na API. Tente novamente.');
+  }
+
+  const text = data.choices?.[0]?.message?.content;
+  if (!text) throw new Error('Sem resposta. Tente novamente.');
+  return text;
 }
 function parseJSON(raw) { const c=raw.replace(/```json|```/g,'').trim(); return JSON.parse(c.substring(c.indexOf('{'),c.lastIndexOf('}')+1)); }
 function fileToB64(f) { return new Promise((ok,er)=>{ const r=new FileReader(); r.onload=()=>ok(r.result.split(',')[1]); r.onerror=er; r.readAsDataURL(f); }); }
