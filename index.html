@@ -257,10 +257,17 @@ textarea.inp{resize:vertical;}
       <div id="linkPanel">
         <div class="card card-p" style="margin-bottom:14px">
           <span class="lbl">🔗 LINK DO PRODUTO</span>
-          <input type="url" id="productLink" class="inp" placeholder="https://shopee.com.br/produto… ou mercadolivre.com.br/…" oninput="checkLink()"/>
-          <div id="platBadge" style="margin-top:8px;display:none"></div>
+          <input type="url" id="productLink" class="inp" placeholder="https://shopee.com.br/produto… ou mercadolivre.com.br/…" oninput="checkLink()" style="margin-bottom:12px"/>
+          <div id="platBadge" style="margin-bottom:10px;display:none"></div>
+
+          <span class="lbl">📦 NOME DO PRODUTO (obrigatório)</span>
+          <input type="text" id="productName" class="inp" placeholder="Ex: Mini Processador Elétrico USB 350ml" oninput="checkGenerateBtn()" style="margin-bottom:10px"/>
+
+          <span class="lbl">📝 DESCRIÇÃO / BENEFÍCIOS (opcional)</span>
+          <textarea id="productDesc" class="inp" rows="3" placeholder="Ex: Portátil, recarregável USB, tritura alho e legumes em segundos, fácil de limpar..." oninput="checkGenerateBtn()"></textarea>
+
           <div style="margin-top:10px;padding:9px 12px;background:var(--card2);border-radius:9px">
-            <p style="color:var(--sub);font-size:11px;line-height:1.5">💡 A IA analisa o padrão da URL e gera Post, Reels, Stories e Roteiro de Vídeo completos.</p>
+            <p style="color:var(--sub);font-size:11px;line-height:1.5">💡 <b>Dica:</b> Preencha o nome do produto para gerar conteúdo preciso. A descrição é opcional mas melhora o resultado!</p>
           </div>
         </div>
       </div>
@@ -586,8 +593,9 @@ function checkLink() {
 }
 
 function checkGenerateBtn() {
-  const link = document.getElementById('productLink').value.trim();
-  const ok = (currentMode==='link' && link.length>8) || (currentMode==='photo' && (!!photoB64 || document.getElementById('imgUrlInput').value.trim().length>5));
+  const name = document.getElementById('productName')?.value?.trim() || '';
+  const photo = !!photoB64 || (document.getElementById('imgUrlInput')?.value?.trim()?.length > 5);
+  const ok = (currentMode==='link' && name.length > 2) || (currentMode==='photo' && photo);
   document.getElementById('generateBtn').disabled = !ok;
 }
 
@@ -677,17 +685,25 @@ function blobToB64(b) { return fileToB64(b); }
 /* ── GENERATE CONTENT ── */
 async function generateContent() {
   if (!apiKey) { showApiModal(); return; }
-  const link = document.getElementById('productLink').value.trim();
+
+  const link = document.getElementById('productLink')?.value?.trim() || '';
+  const nome = document.getElementById('productName')?.value?.trim() || '';
+  const desc = document.getElementById('productDesc')?.value?.trim() || '';
+
   document.getElementById('loadingContent').style.display = 'block';
   document.getElementById('errorContent').style.display = 'none';
   document.getElementById('resultContent').style.display = 'none';
   document.getElementById('generateBtn').disabled = true;
 
   try {
-    const prompt = `Especialista em marketing de afiliados brasileiro 2026.
-${currentMode==='link' ? 'Link do produto: '+link+'\nIdentifique o produto pelo padrão da URL.' : 'Analise a imagem do produto.'}
-Retorne SOMENTE JSON válido sem markdown:
-{"produto":"nome","emoji":"emoji","cor":"#hex","post":{"titulo":"título impactante","bullets":["✔ b1","✔ b2","✔ b3","✔ b4"],"rodape":"frase persuasiva","cta":"👉 Link na bio! [COLE SEU LINK]","hashtags":"#t1 #t2 #t3 #t4 #afiliado2026"},"reels":{"hook":"gancho 8 palavras","cenas":[{"tempo":"0-3s","camera":"ação","fala":"frase"},{"tempo":"3-8s","camera":"ação","fala":"frase"},{"tempo":"8-13s","camera":"ação","fala":"frase"},{"tempo":"13-15s","camera":"aponta","fala":"CTA"}],"legenda":"legenda+hashtags"},"stories":[{"tipo":"hook","texto":"IMPACTO","sub":"subtítulo"},{"tipo":"beneficios","itens":["✅ i1","✅ i2","✅ i3"]},{"tipo":"cta","texto":"Corra! 🔥","link":"[COLE SEU LINK]"}],"video":{"titulo":"título","duracao":"45s","musica":"estilo","cenas":[{"tempo":"0-5s","visual":"show","audio":"fala"},{"tempo":"5-15s","visual":"show","audio":"fala"},{"tempo":"15-25s","visual":"demo","audio":"fala"},{"tempo":"25-30s","visual":"CTA","audio":"link"}],"legenda":"legenda+hashtags"}}`;
+    const ctx = currentMode === 'link'
+      ? `Produto: "${nome}"\n${desc ? 'Benefícios/características: ' + desc + '\n' : ''}Link de afiliado Shopee: ${link}`
+      : `Analise a imagem do produto enviada e crie conteúdo viral.`;
+
+    const prompt = `Você é especialista em marketing de afiliados brasileiro, 2026.
+${ctx}
+Crie conteúdo viral de vendas. Retorne SOMENTE JSON válido sem markdown:
+{"produto":"${nome||'produto'}","emoji":"emoji representativo","cor":"#hexcolor","post":{"titulo":"título impactante em PT-BR","bullets":["✔ benefício 1","✔ benefício 2","✔ benefício 3","✔ benefício 4"],"rodape":"frase persuasiva de fechamento","cta":"👉 Link na bio! ${link||'[COLE SEU LINK]'}","hashtags":"#tag1 #tag2 #tag3 #tag4 #afiliado2026"},"reels":{"hook":"gancho máx 8 palavras impactante","cenas":[{"tempo":"0-3s","camera":"ação na câmera","fala":"frase de impacto"},{"tempo":"3-8s","camera":"mostrar produto","fala":"benefício principal"},{"tempo":"8-13s","camera":"demonstração","fala":"prova social"},{"tempo":"13-15s","camera":"aponta câmera","fala":"CTA urgente"}],"legenda":"legenda completa com hashtags"},"stories":[{"tipo":"hook","texto":"TEXTO IMPACTO MAIÚSCULAS","sub":"subtítulo curto"},{"tipo":"beneficios","itens":["✅ benefício 1","✅ benefício 2","✅ benefício 3"]},{"tipo":"cta","texto":"Corra antes que acabe! 🔥","link":"${link||'[COLE SEU LINK]'}"}],"video":{"titulo":"título do vídeo","duracao":"45 segundos","musica":"estilo musical sugerido","cenas":[{"tempo":"0-5s","visual":"o que mostrar","audio":"o que falar"},{"tempo":"5-15s","visual":"demonstração produto","audio":"benefícios"},{"tempo":"15-25s","visual":"antes e depois","audio":"prova social"},{"tempo":"25-30s","visual":"tela com CTA","audio":"link na bio"}],"legenda":"legenda do vídeo com hashtags"}}`;
 
     const content = [];
     if (currentMode==='photo' && photoB64) content.push({type:'image',source:{type:'base64',media_type:photoMime||'image/jpeg',data:photoB64}});
@@ -697,10 +713,10 @@ Retorne SOMENTE JSON válido sem markdown:
     currentResult = parseJSON(raw);
     currentTab = 'post';
     renderResult();
-    showToast('✅ Conteúdo gerado!');
+    showToast('✅ Conteúdo gerado com sucesso!');
   } catch(e) {
     console.error(e);
-    document.getElementById('errorMsg').textContent = '❌ ' + (e.message || 'Erro ao gerar. Verifique sua API Key e tente novamente.');
+    document.getElementById('errorMsg').textContent = '❌ ' + (e.message || 'Erro ao gerar. Tente novamente em 1 minuto.');
     document.getElementById('errorContent').style.display = 'block';
   }
   document.getElementById('loadingContent').style.display = 'none';
